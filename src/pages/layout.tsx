@@ -18,13 +18,17 @@ import {
   Button,
   Alert, 
   message,
-  Spin
+  Spin,
+  Typography
 } from 'antd';
+
 import React, { useState } from 'react';
 import type {
   GetServerSideProps,
+  GetStaticProps,
   InferGetServerSidePropsType,
-  NextPage
+  NextPage,
+  InferGetStaticPropsType
 } from 'next';
 import type { ColumnsType } from 'antd/es/table';
 import { URLSearchParams } from 'url';
@@ -34,6 +38,8 @@ import {HashLoader} from 'react-spinners';
 
 const { RangePicker } = DatePicker;
 const { Header, Content, Footer, Sider } = Layout;
+const { Text } = Typography;
+
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -66,19 +72,24 @@ const items: MenuItem[] = [
 ];
 
 interface Item {
-  ht_saleamt: string;
+  ht_saleamt: number;
   storecd: string;
   tendertype2: string;
-  tot_saleamt: string;
+  tot_saleamt: number;
   plugb: string;
-  kb_saleamt: string;
+  kb_saleamt: number;
   saledate: string;
+}
+
+interface retProps {
+  results : any;
+  results2 : any;
 }
 
 const App2: NextPage = ({
   results,
   results2
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { mutate } = useSWRConfig();
   const [collapsed, setCollapsed] = useState(false);
   const [onSelectedKeys, setOnSelectedKeys] = useState('1'); //키
@@ -201,9 +212,9 @@ const App2: NextPage = ({
 
     for (var i = 0; i < clickResultsByProd['retData'].length; i++) {
       
-      clickResultsByProd['retData'][i]['KB_SALEAMT'] = clickResultsByProd['retData'][i]['KB_SALEAMT'].toLocaleString('ko-KR');
-      clickResultsByProd['retData'][i]['HT_SALEAMT'] = clickResultsByProd['retData'][i]['HT_SALEAMT'].toLocaleString('ko-KR');
-      clickResultsByProd['retData'][i]['TOT_SALEAMT'] = clickResultsByProd['retData'][i]['TOT_SALEAMT'].toLocaleString('ko-KR');
+      // clickResultsByProd['retData'][i]['KB_SALEAMT'] = clickResultsByProd['retData'][i]['KB_SALEAMT'].toLocaleString('ko-KR');
+      // clickResultsByProd['retData'][i]['HT_SALEAMT'] = clickResultsByProd['retData'][i]['HT_SALEAMT'].toLocaleString('ko-KR');
+      // clickResultsByProd['retData'][i]['TOT_SALEAMT'] = clickResultsByProd['retData'][i]['TOT_SALEAMT'].toLocaleString('ko-KR');
       onClickResultArrayByProd.push(clickResultsByProd['retData'][i]);
       
     }
@@ -297,13 +308,13 @@ const App2: NextPage = ({
     {
       title: '교보문고포스매출',
       dataIndex: 'KB_SALEAMT',
-      key: 'KB_SALEAMT',
+      key: 'kb_saleamt',
       align: 'right' as AlignType,
     },    
     {
       title: '핫트랙스포스매출',
       dataIndex: 'HT_SALEAMT',
-      key: 'HT_SALEAMT',
+      key: 'ht_saleamt',
       align: 'right' as AlignType,
     },
 
@@ -343,7 +354,37 @@ const App2: NextPage = ({
             {
                 loading ?
                 <Spin tip="Loading..." size="large">
-                </Spin>  : <Table key='table_1' columns={columnsByProd} dataSource={newDataByProd} />  
+                </Spin>  : 
+                <Table key='table_1' 
+                  columns={columnsByProd} 
+                  dataSource={newDataByProd} 
+                  pagination={false} 
+                  bordered 
+                  summary={(pageData) => {
+                    let total_kb_saleamt = 0;
+                    let total_ht_saleamt = 0;
+            
+                    pageData.forEach(({ kb_saleamt, ht_saleamt }) => {
+                      // kb_saleamt.replace(/,/g, "")
+                      console.log("kb_saleamt=", kb_saleamt );
+                      total_kb_saleamt += kb_saleamt;
+                      total_ht_saleamt += ht_saleamt;
+                    });
+                    return (
+                      <>
+                        <Table.Summary.Row>
+                          <Table.Summary.Cell index={0} colSpan={4}>Total</Table.Summary.Cell>
+                          <Table.Summary.Cell index={4}>
+                            <Text type="danger">{total_kb_saleamt}</Text>
+                          </Table.Summary.Cell>
+                          <Table.Summary.Cell index={5}>
+                            <Text>{total_ht_saleamt}</Text>
+                          </Table.Summary.Cell>
+                        </Table.Summary.Row>
+                      </>
+                    );
+                  }}
+                />
               }              
               
               {/* {
@@ -352,7 +393,7 @@ const App2: NextPage = ({
               {
                 loading ?
                 <Spin tip="Loading..." size="large">
-                </Spin>  : <Table key='table_2' columns={columns} dataSource={newData} />
+                </Spin>  : <Table key='table_2' columns={columns} dataSource={newData} pagination={false} />
               }
               
             </Space>
@@ -406,7 +447,7 @@ const App2: NextPage = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async (context) => {
 
   const date = new Date().toISOString().substring(0,10).replace(/-/g,'');
     
