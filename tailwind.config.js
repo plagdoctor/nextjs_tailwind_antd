@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        montserrat: ['Montserrat', 'sans-serif']
+        montserrat: ['Nunito Sans','Montserrat', 'sans-serif']
       }
     },
     colors: {
