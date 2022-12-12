@@ -4,7 +4,8 @@ import {
   PieChartOutlined,
   TeamOutlined,
   UserOutlined,
-  SyncOutlined
+  SyncOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import {
   MenuProps,
@@ -19,10 +20,11 @@ import {
   Alert, 
   message,
   Spin,
-  Typography
+  Typography,
+  Popconfirm
 } from 'antd';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type {
   GetServerSideProps,
   GetStaticProps,
@@ -35,6 +37,12 @@ import { URLSearchParams } from 'url';
 import useSWR, { useSWRConfig } from "swr";
 import { AlignType } from 'rc-table/lib/interface';
 import {HashLoader} from 'react-spinners';
+import useUser from '@libs/client/useUser';
+  
+import kyoboLogo from '@public/img/logo_kyobo.png'
+import Image from 'next/image';
+import useMutation from '@libs/client/useMutation';
+import { useRouter } from 'next/router';
 
 const { RangePicker } = DatePicker;
 const { Header, Content, Footer, Sider } = Layout;
@@ -86,10 +94,20 @@ interface retProps {
   results2 : any;
 }
 
+interface MutationResult {
+  ok: boolean;
+}
+
+
 const App2: NextPage = ({
   results,
   results2
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  
+  const {user, isLoading} = useUser();
+  console.log(user);
+  const [logout, {data:logOutData,loading:logOutLoading , error}] = useMutation<MutationResult>("/api/users/logout");
+  
   const { mutate } = useSWRConfig();
   const [collapsed, setCollapsed] = useState(false);
   const [onSelectedKeys, setOnSelectedKeys] = useState('1'); //키
@@ -98,6 +116,7 @@ const App2: NextPage = ({
   const [date, setDate] = useState(null);
   
   const [loading, setLoading] = useState(false);
+  const router  = useRouter();    
   //결과 가져오기
   var data: Item[];
   var dataByProd: Item[];
@@ -105,6 +124,31 @@ const App2: NextPage = ({
   const onMenuSelected = () => {
     // console.log('메뉴가 클릭됐네 근데 무슨 메뉼');
   };
+  const onLogoutClick = () => {
+    // 로그아웃 처리
+    console.log("로그아웃 하자!");
+    logout(user);
+    
+    console.log("api 다녀옴");
+    if(!logOutLoading){
+      if(logOutData?.ok ==true ){
+        console.log("로그아웃 성공");
+        router.push("/login");
+      }
+    }
+  };
+  useEffect(() => {
+    if (logOutData?.ok == true){
+        console.log("일로오지?")
+        message.success('Logout success!');  
+        router.push("/");
+    }
+    if (logOutData?.ok == false){
+        console.log("일로오지? 2")
+        message.warn('Logout 실패하였습니다!');  
+        // router.push("/");
+    }        
+  }, [logOutData]);
 
   const handleChange = (value: any) => {
     message.info(` ${value ? value.format('YYYY-MM-DD') : 'None'} : 일자를 선택하셨네요!`);
@@ -331,12 +375,12 @@ const App2: NextPage = ({
     switch (key) {
       case '1':
         return (
-          <div>
+          <div className=' -ml-6'>
           <Breadcrumb style={{ margin: '16px 0px' }}>
             <Breadcrumb.Item>잠실점</Breadcrumb.Item>
             <Breadcrumb.Item>롯데 수수료 매출정산</Breadcrumb.Item>
           </Breadcrumb>
-            <Space key ='space_1' className="flex space-x-2 mb-8">
+            <Space key ='space_1' className="flex mb-8">
               <DatePicker size='large' placeholder ="매출조회일자" onChange={handleChange} />
               {/* <RangePicker key= 'rangepicker_1'
                 onChange={(e) => console.log(e)}
@@ -354,7 +398,7 @@ const App2: NextPage = ({
                 </Tag>   : <></>           
               }
             </Space>
-            <Space key ='space_2' className="space-x-4 mb-8" align='start'>
+            <Space key ='space_2' className=" space-x-4 mb-8" align='start'>
             {
                 loading ?
                 <Spin tip="Loading..." size="large">
@@ -461,7 +505,9 @@ const App2: NextPage = ({
         collapsed={collapsed}
         onCollapse={value => setCollapsed(value)}
       >
-        <div className="logo" />
+        <div className="logo mt-5 ml-10 ">
+          <Image src={kyoboLogo} alt="logo" />
+          </div> 
         <Menu
           theme="dark"
           defaultSelectedKeys={['1']}
@@ -473,7 +519,13 @@ const App2: NextPage = ({
         />
       </Sider>
       <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0 }} />
+        <Header className="site-layout-background" style={{ padding: 0 }} >
+        <Popconfirm title="로그아웃 하시겠어요？" okText="Yes" cancelText="No" okType='danger' onConfirm={onLogoutClick} >
+        <div className=' mt-4 mr-4 flex justify-end'><LogoutOutlined style={{ fontSize: '32px', color: '#ffffff' }}/></div>  
+        </Popconfirm>
+        {/* <div className=' bg-white'> <LogoutOutlined /> </div>   */}
+        
+        </Header>
         <Content style={{ margin: '0 16px' }}>
           <div
             className="site-layout-background"

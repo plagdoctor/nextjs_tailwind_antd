@@ -21,37 +21,53 @@ import logoImage from '@public/img/logo.png'
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/router";
+import useMutation from '@libs/client/useMutation';
+
+interface LoginProfile{
+    empno:String;
+    empname:String;
+}
+
+interface MutationResult {
+    ok: boolean;
+    user: LoginProfile
+  }
 
 const Enter: NextPage = () => {
+
+    const [enter, {loading, data, error}] = useMutation<MutationResult>("/api/users/enter");
     const [onLogin, setOnLogin] = useState(false);
     const [onSubmit, setOnSubmit] = useState(false);  
     const router  = useRouter();    
     
     useEffect(() => {
-        if (onLogin == true){
-          router.push("/");
+        if (data?.ok == true){
+            console.log("일로오지?")
+            message.success('Login success!');  
+            router.push("/");
         }
-      }, [onLogin]);
+        if (data?.ok == false){
+            console.log("일로오지?")
+            message.warn('Login 실패하였습니다!');  
+            // router.push("/");
+        }        
+      }, [data]);
 
     const onFinish = (values: any) => {
-        console.log('Success:', values);
         setOnLogin(false);
         setOnSubmit(true);
+        console.log('Success:', values);
+        console.log('username:', values.username);
+        console.log('password:', values.password);
+        let empNo = values.username;
+        let empPassword = values.password;
+        enter({empNo, empPassword});
         // enterLogin();
         setTimeout(() => {
-            message.success('Login success!');
+            setOnSubmit(false);
         }, 2000);
-        setOnSubmit(false);
-        setOnLogin(true);
       };
 
-    // const enterLogin = async () => {
-    // setOnSubmit(true);
-    // await setTimeout(() => console.log("클릭")
-    // , 3000);   
-    // setOnSubmit(false);     
-    // };          
-    
     // const onFinishFailed = (errorInfo: any) => {
     //     console.log('Failed:', errorInfo);
     // };
@@ -64,8 +80,8 @@ const Enter: NextPage = () => {
             <a href="#" className="bg-black text-white font-bold text-xl p-4" >Logo</a>
         </div>     */}
         <div className="flex flex-col justify-center md:justify-start my-auto md: mt-12 px-8 md:px-24 lg:px-32">
-            <div className="text-center text-3xl">오프라인 수수료 정산</div>
-            <div className="text-center text-3xl">관리 시스템</div>
+            <div className="text-center text-3xl">오프라인 백화점입점</div>
+            <div className="text-center text-3xl">정산관리시스템</div>
             
             <div className="flex flex-col pt-4">
                 
@@ -104,10 +120,11 @@ const Enter: NextPage = () => {
 
                     <Form.Item name="submit" wrapperCol={{ offset: 0, span: 24 }}>
                         <Button type="default" 
-                                loading={onSubmit} 
                                 htmlType="submit" 
-                                // onClick={() => enterLogin()}
-                                block>
+                                // onClick={() => setOnSubmit(true)}
+                                block
+                                loading={onSubmit} 
+                                >
                         Login
                         </Button>
                     </Form.Item>                    
@@ -117,13 +134,13 @@ const Enter: NextPage = () => {
 
     </div>
     <div className="w-1/2 shadow-2xl hidden md:block">
-        <div className="mt-8 ml-12 md:block absolute z-10">
+        <div className="mt-12 ml-14 md:block absolute z-10">
             <Image className="object-cover w-full h-screen hidden md:block" src={logoImage} alt="logo" /> 
         </div>    
         { (! enterImage) ? <></>: <Image 
                                         className="object-cover w-full h-screen hidden md:block" 
                                         // height={4000}
-                                        height={2500}
+                                        height={3000}
                                         src={enterImage} 
                                         alt="Background" /> }
     </div>
