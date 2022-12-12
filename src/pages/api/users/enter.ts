@@ -1,10 +1,9 @@
-import {withIronSessionApiRoute} from "iron-session/next";
-import withHandler, { ResponseType } from "@libs/server/withHandler";
+// import {withIronSessionApiRoute} from "iron-session/next";
 // import withHandler, { ResponseType } from "../../../../../libs/server/withHandler";
+import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { NextApiRequest, NextApiResponse } from "next";
 // import { withApiSession } from "../../../../../libs/server/withSession";
 import { withApiSession } from "@libs/server/withSession";
-import { json } from "stream/consumers";
 
 async function handler(
     req:NextApiRequest, res:NextApiResponse<ResponseType>
@@ -54,15 +53,22 @@ async function handler(
     }
     //정상적으로 리턴 받으면,
     else {
-        
+        console.log("정상리턴");
             // console.log("json-retData= ", results['retData'][0]['user_id']);
         if(results['retData'][0]['user_id'] == empNo && results['retData'][0]['sert_num'] == empPassword ) {
-            console.log("성공");
+            console.log("성공맞나");
             req.session.user = {
                 empno : results['retData'][0]['user_id'],
                 empname: results['retData'][0]['user_name'],
             }
-            await req.session.save();
+            try
+            {
+                await req.session.save();
+            }catch(err){
+                console.log(err);
+            }
+            
+            console.log("성공후 리턴");
             res.json({
                 ok:true,
                 profile: results['retData'][0],

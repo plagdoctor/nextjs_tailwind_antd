@@ -9,8 +9,11 @@ declare module "iron-session" {
 }
 
 const cookieOptions = {
+    cookieOptions: {
+        secure: false},
     cookieName: "next1_offline_session",
     password: process.env.IRON_SESSION_KEY!,
+
 };
 
 export function withApiSession(fn:any) {

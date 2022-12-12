@@ -10,7 +10,8 @@ export function middleware(req:NextRequest, ev: NextFetchEvent) {
     }
     if (!req.url.includes("/api")){
         if (!req.url.includes("login") && !req.cookies.next1_offline_session){
-           return NextResponse.redirect(url);
+            console.log("api 아니니까 들어와야함");
+            return NextResponse.redirect(url);
         }
     }
 }
