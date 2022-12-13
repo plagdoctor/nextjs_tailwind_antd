@@ -29,6 +29,8 @@ import type { ColumnsType, TableProps } from 'antd/es/table';
 import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { AlignType } from 'rc-table/lib/interface';  
 import React, { useState } from 'react';
+import { CSVLink } from "react-csv";
+
 const dayjs = require("dayjs");
 
 interface retProps {
@@ -361,6 +363,26 @@ const Jamsil = ({
               <Button key ='btn_1' size="middle" type="default" onClick={onActionClick} >
                 매출조회
               </Button>
+              <Button key ='btn_2' size="middle" type="default" >
+              <CSVLink
+                  data={newDataByProd}
+                  onClick={() => {
+                  console.log("clicked") 
+                  }}
+                  >
+                  엑셀 다운로드(과세별)
+              </CSVLink>
+              </Button>                 
+              <Button key ='btn_3' size="middle" type="default" >
+              <CSVLink
+                  data={newData}
+                  onClick={() => {
+                  console.log("clicked") 
+                  }}
+                  >
+                  엑셀 다운로드(롯데금권)
+              </CSVLink>
+              </Button>              
               {/* <HashLoader color="#36d7b7" /> */}
               { loading ?
                 

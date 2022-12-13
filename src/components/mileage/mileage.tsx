@@ -30,6 +30,7 @@ import { AlignType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import moment from "moment";
 import { ConfigProvider } from "antd";
+import { CSVLink } from "react-csv";
 
 const { RangePicker } = DatePicker;
 
@@ -312,6 +313,17 @@ const Mileage = () => {
               <Button key ='btn_1' size="middle" type="default" onClick={onActionClick} >
                 매출조회
               </Button>
+              <Button key ='btn_2' size="middle" type="default" >
+              <CSVLink
+                  data={newData}
+                  onClick={() => {
+                  console.log("clicked") 
+                  }}
+                  >
+                  엑셀 다운로드
+              </CSVLink>
+              </Button>
+                            
               {/* <HashLoader color="#36d7b7" /> */}
               { loading ?
                 
