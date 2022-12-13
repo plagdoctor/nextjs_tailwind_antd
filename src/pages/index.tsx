@@ -200,9 +200,11 @@ const App2: NextPage = ({
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" style={{ padding: 0 }} >
+        
         <Popconfirm title="로그아웃 하시겠어요？" okText="Yes" cancelText="No" okType='danger' onConfirm={onLogoutClick} >
         <div className=' mt-4 mr-4 flex justify-end'><LogoutOutlined style={{ fontSize: '32px', color: '#ffffff' }}/></div>  
         </Popconfirm>
+        
         {/* <div className=' bg-white'> <LogoutOutlined /> </div>   */}
         
         </Header>
@@ -214,9 +216,9 @@ const App2: NextPage = ({
             {componentsSwtich(onSelectedKeys)}
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
+        {/* <Footer style={{ textAlign: 'center' }}>
           Ant Design ©Created by Ant UED
-        </Footer>
+        </Footer> */}
       </Layout>
     </Layout>
   );

@@ -31,7 +31,7 @@ import React, { useEffect, useState } from 'react';
 import moment from "moment";
 import { ConfigProvider } from "antd";
 import { CSVLink } from "react-csv";
-
+import {RangeValue} from 'rc-picker/lib/interface.d';
 const { RangePicker } = DatePicker;
 
 interface Item {
@@ -102,7 +102,9 @@ const Mileage = () => {
             value: '핫트랙스POS',
           },    
         ],
-        onFilter: (value: string, record) => record.POSTYPE?.indexOf(value) === 0,             
+        // onFilter: (value: string | number | boolean, record) => record.POSTYPE?.indexOf(value) === 0,      
+         onFilter: (value, record) => record.POSTYPE?.includes(String(value)),    
+
         },
         {
         title: '매출상품구분',
@@ -120,8 +122,11 @@ const Mileage = () => {
             value: '핫트랙스상품',
           },    
         ],
-        onFilter: (value: string, record) => record.PLUTYPE?.indexOf(value) === 0,                
-        },    
+        // onFilter: (value: string | number | boolean, record) => record.PLUTYPE?.indexOf(value) === 0,    
+
+        onFilter: (value, record) => typeof value === 'string' ? record.PLUTYPE?.includes(value) : false,                
+        
+      },    
         {
         title: '회계점포코드',
         dataIndex: 'ETC1NM',
@@ -145,7 +150,11 @@ const Mileage = () => {
             value: '마일리지',
           },    
         ],
-        onFilter: (value: string, record) => record.MILEAGETYPE?.indexOf(value) === 0,               
+        // onFilter: (value: string | number | boolean, record) => record.MILEAGETYPE?.indexOf(value) === 0, 
+
+        
+        onFilter: (value, record) => typeof value === 'string' ? record.MILEAGETYPE?.includes(value) : false,                
+
         },
         {
         title: '처리구분',
@@ -216,28 +225,34 @@ const Mileage = () => {
     let onClickResultArray: any[] = [];
     //결과 가져오기
     var data: mileageItem[];
-    const [date, setDate] = useState(null);
     const [loading, setLoading] = useState(false); 
+
+    
     //오늘자(now), 그달의 시작일자(firstdayOfMonth) 가져오기
+    
     const [now,setNow] = useState(moment());
-    const [firstdayOfMonth,setFirstdayOfMonth] = useState(moment(moment().format('YYYYMM'+'01')));
-    const onDateChange = (
-      date: Array<moment>,
-      dateString: Array<string>
-    ): void => {
-      console.log(moment(date[0]).format('YYYYMMDD'));
-      console.log(moment(date[1]).format('YYYYMMDD'));
+    // const [firstdayOfMonth,setFirstdayOfMonth] = useState(moment(moment().format('YYYYMM'+'01')));
+    
+    const [date, setDate] = useState<RangeValue<moment.Moment>>([
+      moment(moment().format('YYYYMM'+'01')),
+      moment(),
+    ]);
+
+    // const onDateChange = (
+    //   date: [moment.Moment, moment.Moment]
+
+    // ): void => {
+    //   console.log(moment(date[0]).format('YYYYMMDD'));
+    //   console.log(moment(date[1]).format('YYYYMMDD'));
       
-      setNow(date[0]);
-      setFirstdayOfMonth(date[1]);
-    };
+    //   setNow(date[0]);
+    //   setFirstdayOfMonth(date[1]);
+    // };
 
     // useEffect(() => {
     //   const now =moment();
     //   const firstdayOfMonth = moment(moment().format('YYYYMM'+'01'));
     // }, []);
-
-    console.log("-----------------------firstdayOfMonth-----------------------");
     // console.log(firstdayOfMonth);
     // const todaySetting = (now :dayjs,now2:dayjs) => {
 
@@ -251,36 +266,41 @@ const Mileage = () => {
     data = resultArray;
     
     const [newData, setnewData] = useState(data);
-
-    const handleChange = (value: any) => {
-        message.info(` ${value ? value.format('YYYY-MM-DD') : 'None'} : 일자를 선택하셨네요!`);
-        setDate(value.format('YYYYMMDD'));
-      };    
-
     
       const onActionClick = async () => {
         setLoading(true);
         // const date = new Date().toISOString().substring(0,10).replace(/-/g,'');
           // const { data } = useSWR(shouldFetch ? null : `/api/sale/${date}`);    
         try { 
-          // date.toISOString().substring(0,10).replace(/-/g,'');
-        const clickResults = await fetch(
-          // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
-          `http://172.29.41.133:7070/kflowapi/getmileage?fromDate=${moment(firstdayOfMonth).format('YYYYMMDD')}&toDate=${moment(now).format('YYYYMMDD')}`
-        )
-        .then(function(response) {
-          return response.json();
-        })    
-        .then(function(json) {
-          //console.log("--------------------json--------------------------");
-          //console.log(json);
-          return json;})
-        
-    
-        for (var i = 0; i < clickResults['retData'].length; i++) {
-          onClickResultArray.push(clickResults['retData'][i]);
-        }
-    
+          
+
+          console.log("-----------------------firstdayOfMonth-----------------------");
+          if(!date){
+            console.log("데이트가 없어??")
+          }
+          else{
+            console.log(moment(date?.[0]).format('YYYYMMDD') );
+            console.log(moment(date?.[1]).format('YYYYMMDD') );
+
+          }
+            // date.toISOString().substring(0,10).replace(/-/g,'');
+          const clickResults = await fetch(
+            // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+            `http://172.29.41.133:7070/kflowapi/getmileage?fromDate=${moment(date?.[0]).format('YYYYMMDD')}&toDate=${moment(date?.[1]).format('YYYYMMDD')}`
+          )
+          .then(function(response) {
+            return response.json();
+          })    
+          .then(function(json) {
+            //console.log("--------------------json--------------------------");
+            //console.log(json);
+            return json;})
+          
+      
+          for (var i = 0; i < clickResults['retData'].length; i++) {
+            onClickResultArray.push(clickResults['retData'][i]);
+          }
+      
         } catch (err) {
           console.log("error!");
           console.log(err);
@@ -296,16 +316,19 @@ const Mileage = () => {
       };        
   return (
       <div>
-          <Breadcrumb style={{ margin: '16px 0px' }}>
-            <Breadcrumb.Item>통합포인트</Breadcrumb.Item>
-            <Breadcrumb.Item>마일리지정산조회</Breadcrumb.Item>
-          </Breadcrumb>
-            <Space key ='space_1' className="flex mb-8">
+            <Breadcrumb style={{ margin: '4px 0px' }}>
+              <Breadcrumb.Item>마일리지</Breadcrumb.Item>
+              <Breadcrumb.Item>롯데 수수료 매출정산</Breadcrumb.Item>
+            </Breadcrumb>        
+            <Space key ='space_1' className="flex">
               {/* <DatePicker size='large' placeholder ="매출조회일자" onChange={handleChange} /> */}
               <ConfigProvider>
                 <RangePicker key= 'rangepicker_1'
-                  value={[firstdayOfMonth,now]}
-                  onChange={onDateChange}
+                  value={date}
+                  onChange={setDate}
+                  // onChange= {(date: [moment.Moment,moment.Moment]) => {
+
+                  // }}
                   placeholder={["시작일", "종료일"]}
                 />    
               </ConfigProvider>
@@ -337,7 +360,9 @@ const Mileage = () => {
               {
                   loading ?
                   <Spin tip="Loading..." size="large">
-                  </Spin>  : <Table bordered key='table_2' columns={mileages} dataSource={newData} pagination={false} scroll={{  x: 900, y: 700 }}  
+                  </Spin>  : <Table bordered key='table_2' columns={mileages} dataSource={newData}  size="small" 
+                  pagination={{ pageSize: 100 }} scroll={{ y: 600 }}
+                    // scroll={{  x: 900, y: 700 }}  
                     summary={(pageData) => {
                         let tot_app = 0;
                         let tot_dep1 = 0;
@@ -356,7 +381,7 @@ const Mileage = () => {
                       return (
                         <Table.Summary fixed>
                           <Table.Summary.Row>
-                            <Table.Summary.Cell index={0} colSpan={8} align='center'><Typography.Title level={4} >Total</Typography.Title></Table.Summary.Cell>
+                            <Table.Summary.Cell index={0} colSpan={8} align='center'><Typography.Title level={5} >Total</Typography.Title></Table.Summary.Cell>
                             <Table.Summary.Cell index={8} align='right'>
                               <Typography.Title level={5} >{tot_app.toLocaleString('ko-KR')}</Typography.Title>
                             </Table.Summary.Cell>

@@ -97,7 +97,8 @@ const Jamsil = ({
           value: '핫트랙스',
         },      
       ],
-      onFilter: (value: string, record) => record.PLUGB?.indexOf(value) === 0,        
+      // onFilter: (value: string | number | boolean, record) => record.PLUGB?.indexOf(value) === 0,        
+      onFilter: (value, record) => record.PLUGB?.includes(String(value)),    
     },    
     {
       title: '롯데입력금권',
@@ -128,7 +129,8 @@ const Jamsil = ({
           value: '05:브랜드마일리지',
         },                              
       ],
-      onFilter: (value: string, record) => record.TENDERTYPE2?.indexOf(value) === 0,  
+      // onFilter: (value: string | number | boolean, record) => record.TENDERTYPE2?.indexOf(value) === 0,  
+      onFilter: (value, record) => record.TENDERTYPE2?.includes(String(value)),      
     },
     {
       title: 'KB포스매출',
@@ -181,7 +183,9 @@ const Jamsil = ({
           value: '핫트랙스',
         },      
       ],
-      onFilter: (value: string, record) => record.PLUGB?.indexOf(value) === 0,  
+       
+      onFilter: (value, record) => record.PLUGB?.includes(String(value)),    
+      // onFilter: (value: string | number | boolean, record) => record.PLUGB?.indexOf(value) === 0,  
     },    
     {
       title: '과세구분',
@@ -202,7 +206,7 @@ const Jamsil = ({
           value: '상품권',
         },      
       ],
-      onFilter: (value: string, record) => record.TAXGB?.indexOf(value) === 0,        
+      onFilter: (value, record) => record.TAXGB?.includes(String(value)),        
     },  
     {
       title: 'KB포스매출',
@@ -349,11 +353,11 @@ const Jamsil = ({
       };        
   return (
       <div>
-          <Breadcrumb style={{ margin: '16px 0px' }}>
+          <Breadcrumb style={{ margin: '4px 0px' }}>
             <Breadcrumb.Item>잠실점</Breadcrumb.Item>
             <Breadcrumb.Item>롯데 수수료 매출정산</Breadcrumb.Item>
           </Breadcrumb>
-            <Space key ='space_1' className="flex mb-8">
+            <Space key ='space_1' className="flex mb-8 ">
               <DatePicker size='large' placeholder ="매출조회일자" onChange={handleChange} />
               {/* <RangePicker key= 'rangepicker_1'
                 onChange={(e) => console.log(e)}
@@ -392,16 +396,17 @@ const Jamsil = ({
               }
             </Space>
             <div className="">
-              <Space key ='space_2' className="mb-8" align='start' wrap>
+              <Space key ='space_2' className="mb-8" align='start'  wrap>
               {
                   loading ?
                   <Spin tip="Loading..." size="large">
                   </Spin>  : 
-                  <Table bordered key='table_1' 
-                  className="mr-4"
+                  <Table key='table_1' 
+                    className="mr-4"
+                    pagination={false}
                     columns={columnsByProd} 
                     dataSource={newDataByProd} 
-                    pagination={false} 
+                    size='small'
                     summary={(pageData) => {
                         let total_kb_saleamt = 0;
                         let total_ht_saleamt = 0;
@@ -442,8 +447,11 @@ const Jamsil = ({
                 {
                   loading ?
                   <Spin tip="Loading..." size="large">
-                  </Spin>  : <Table bordered key='table_2' columns={columns} dataSource={newData} pagination={false} onChange={onChange} 
-                    summary={(pageData) => {
+                  </Spin>  : <Table 
+                                    bordered 
+                                    key='table_2' 
+                                    columns={columns} dataSource={newData} size='small' pagination={false} onChange={onChange} 
+                                    summary={(pageData) => {
                         let total_kb_saleamt = 0;
                         let total_ht_saleamt = 0;
                         let total_tot_saleamt = 0;
