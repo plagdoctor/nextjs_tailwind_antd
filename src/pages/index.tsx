@@ -44,10 +44,12 @@ import Image from 'next/image';
 import useMutation from '@libs/client/useMutation';
 import { useRouter } from 'next/router';
 import Jamsil from '@components/jamsil/jamsil';
+import Mileage from '@components/mileage/mileage';
 
 const { RangePicker } = DatePicker;
 const { Header, Content, Footer, Sider } = Layout;
 const { Text } = Typography;
+
 
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -164,7 +166,11 @@ const App2: NextPage = ({
       case '3':
         return <h1>item3</h1>;
       case '5':
-        return <h1>마일리지 정산</h1>;       
+        return (
+          <div className=' -ml-6'>
+            <Mileage></Mileage>
+          </div>          
+        );       
       case '6':
         return <h1>Team 1</h1>;        
       default:

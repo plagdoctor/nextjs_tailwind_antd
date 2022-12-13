@@ -21,13 +21,15 @@ import {
     message,
     Spin,
     Typography,
-    Popconfirm
+    Popconfirm,
+    ConfigProvider
   } from 'antd';
 
-import type { ColumnsType } from 'antd/es/table';  
+import type { ColumnsType, TableProps } from 'antd/es/table';  
 import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import { AlignType } from 'rc-table/lib/interface';  
 import React, { useState } from 'react';
+const dayjs = require("dayjs");
 
 interface retProps {
     results : any;
@@ -36,19 +38,32 @@ interface retProps {
   
 
 interface Item {
+    key: React.Key;
     HT_SALEAMT: number;
     storecd: string;
-    tendertype2: string;
+    TENDERTYPE2: string;
     TOT_SALEAMT: number;
-    plugb: string;
+    PLUGB: string;
     KB_SALEAMT: number;
     saledate: string;
   }
-  
+
+
+  interface ItemProd {
+    key: React.Key;
+    HT_SALEAMT: number;
+    storecd: string;
+    TAXGB: string;
+    TOT_SALEAMT: number;
+    PLUGB: string;
+    KB_SALEAMT: number;
+    saledate: string;
+  }  
+
 
 const Jamsil = ({
     results,
-    results2
+    results2,
   }: retProps) => {
 
   // console.log(data);
@@ -70,14 +85,48 @@ const Jamsil = ({
       dataIndex: 'PLUGB',
       key: 'PLUGB',
       render: (plugb) => (<Tag color={ plugb == '교보문고' ? 'green' : 'red'} key='TENDERTYPE2'> {plugb.toUpperCase()}  </Tag>),
+      filters: [
+        {
+          text: '교보문고',
+          value: '교보문고',
+        },
+        {
+          text: '핫트랙스',
+          value: '핫트랙스',
+        },      
+      ],
+      onFilter: (value: string, record) => record.PLUGB?.indexOf(value) === 0,        
     },    
     {
       title: '롯데입력금권',
       dataIndex: 'TENDERTYPE2',
       key: 'TENDERTYPE2',
+      // width: 120,
       render: (tendertype2) => (<Tag color={tendertype2.length > 6 ? (tendertype2.length > 9 ?  (tendertype2.length > 12 ? 'magenta' : 'blue') : 'geekblue') : 'purple' } key='TENDERTYPE2'> {tendertype2}  </Tag>),
       // render: (tendertype2) => (<Tag color={tendertype2.length > 6 ? 'red': 'purple' } key='TENDERTYPE2'> {tendertype2}  </Tag>),
-
+      filters: [
+        {
+          text: '01:현금',
+          value: '01:현금',
+        },
+        {
+          text: '02:자사상품권',
+          value: '02:자사상품권',
+        },    
+        {
+          text: '03:타사상품권',
+          value: '03:타사상품권',
+        },    
+        {
+          text: '04:임대상품권',
+          value: '04:임대상품권',
+        },    
+        {
+          text: '05:브랜드마일리지',
+          value: '05:브랜드마일리지',
+        },                              
+      ],
+      onFilter: (value: string, record) => record.TENDERTYPE2?.indexOf(value) === 0,  
     },
     {
       title: 'KB포스매출',
@@ -103,7 +152,7 @@ const Jamsil = ({
     }
   ];
 
-  const columnsByProd: ColumnsType<Item> = [
+  const columnsByProd: ColumnsType<ItemProd> = [
     {
       title: '매출일자',
       dataIndex: 'SALEDATE',
@@ -119,13 +168,39 @@ const Jamsil = ({
       title: '매출구분',
       dataIndex: 'PLUGB',
       key: 'PLUGB',
-      render: (plugb) => (<Tag color={ plugb == '교보문고' ? 'green' : 'red'} key='TENDERTYPE2'> {plugb.toUpperCase()}  </Tag>),
+      render: (PLUGB) => (<Tag color={ PLUGB == '교보문고' ? 'green' : 'red'} key='TENDERTYPE2'> {PLUGB}  </Tag>),
+      filters: [
+        {
+          text: '교보문고',
+          value: '교보문고',
+        },
+        {
+          text: '핫트랙스',
+          value: '핫트랙스',
+        },      
+      ],
+      onFilter: (value: string, record) => record.PLUGB?.indexOf(value) === 0,  
     },    
     {
       title: '과세구분',
       dataIndex: 'TAXGB',
       key: 'TAXGB',
-      render: (taxgb) => (<Tag color={ taxgb == '상품권' ? 'gold' : (taxgb =='과세' ? 'geekblue' : 'purple')} key='TENDERTYPE2'> {taxgb}  </Tag>),
+      render: (TAXGB) => (<Tag color={ TAXGB == '상품권' ? 'gold' : (TAXGB =='과세' ? 'geekblue' : 'purple')} key='TAXGB'> {TAXGB}  </Tag>),
+      filters: [
+        {
+          text: '과세',
+          value: '과세',
+        },
+        {
+          text: '비과세',
+          value: '비과세',
+        },      
+        {
+          text: '상품권',
+          value: '상품권',
+        },      
+      ],
+      onFilter: (value: string, record) => record.TAXGB?.indexOf(value) === 0,        
     },  
     {
       title: 'KB포스매출',
@@ -154,11 +229,16 @@ const Jamsil = ({
     let resultArrayByProd = [];  
     let onClickResultArray: any[] = [];
     let onClickResultArrayByProd: any[] = [];
+
+    //오늘날짜 
+    var now = dayjs();
+    
     //결과 가져오기
     var data: Item[];
-    var dataByProd: Item[];  
+    var dataByProd: ItemProd[];  
     const [date, setDate] = useState(null);
     const [loading, setLoading] = useState(false); 
+    // const today = Date.now();
     
     // Item[] 에 넣기 전에 000,000 처리
     for (var i = 0; i < results['retData'].length; i++) {
@@ -190,7 +270,11 @@ const Jamsil = ({
         setDate(value.format('YYYYMMDD'));
       };    
 
-    
+
+    const onChange: TableProps<Item>['onChange'] = ( filters, sorter, extra) => {
+      console.log('params',  filters, sorter, extra);
+    };
+          
       const onActionClick = async () => {
         console.log("온클릭 ㄱㄱ");
         setLoading(true);
@@ -285,91 +369,94 @@ const Jamsil = ({
                 </Tag>   : <></>           
               }
             </Space>
-            <Space key ='space_2' className=" space-x-4 mb-8" align='start'>
-            {
-                loading ?
-                <Spin tip="Loading..." size="large">
-                </Spin>  : 
-                <Table bordered key='table_1' 
-                  columns={columnsByProd} 
-                  dataSource={newDataByProd} 
-                  pagination={false} 
-                  summary={(pageData) => {
-                      let total_kb_saleamt = 0;
-                      let total_ht_saleamt = 0;
-                      let total_tot_saleamt = 0;
-                      console.log("==============pageData==============");
-                      console.log(pageData);
-                      pageData.forEach(({ KB_SALEAMT, HT_SALEAMT, TOT_SALEAMT }) => {
-                      // kb_saleamt.replace(/,/g, "")
-                      // console.log("kb_saleamt=", kb_saleamt );
-                      
-                      total_kb_saleamt += KB_SALEAMT;
-                      total_ht_saleamt += HT_SALEAMT;
-                      total_tot_saleamt += TOT_SALEAMT;
-                    });
-                    return (
-                      <>
-                        <Table.Summary.Row>
-                          <Table.Summary.Cell index={0} colSpan={4} align='center'>Total</Table.Summary.Cell>
-                          <Table.Summary.Cell index={4} align='right'>
-                            <Typography.Title level={5} >{total_kb_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>
-                          <Table.Summary.Cell index={5}  align='right'>
-                            <Typography.Title level={5} >{total_ht_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>
-                          <Table.Summary.Cell index={6}  align='right'>
-                            <Typography.Title level={5} >{total_tot_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>                          
-                        </Table.Summary.Row>
-                      </>
-                    );
-                  }}
-                />
-              }              
-              
-              {/* {
-                onData == 'clickData' ? (<Table key='table_2' columns={columns} dataSource={clickData} />): (<Table key='table_2' columns={columns} dataSource={[...data]} />)
-              } */}
+            <div className="">
+              <Space key ='space_2' className="mb-8" align='start' wrap>
               {
-                loading ?
-                <Spin tip="Loading..." size="large">
-                </Spin>  : <Table bordered key='table_2' columns={columns} dataSource={newData} pagination={false} 
-                  summary={(pageData) => {
-                      let total_kb_saleamt = 0;
-                      let total_ht_saleamt = 0;
-                      let total_tot_saleamt = 0;
-                      console.log("==============pageData==============");
-                      console.log(pageData);
-                      pageData.forEach(({ KB_SALEAMT, HT_SALEAMT, TOT_SALEAMT }) => {
-                      // kb_saleamt.replace(/,/g, "")
-                      // console.log("kb_saleamt=", kb_saleamt );
-                      
-                      total_kb_saleamt += KB_SALEAMT;
-                      total_ht_saleamt += HT_SALEAMT;
-                      total_tot_saleamt += TOT_SALEAMT;
-                    });
-                    return (
-                      <>
-                        <Table.Summary.Row>
-                          <Table.Summary.Cell index={0} colSpan={4} align='center'>Total</Table.Summary.Cell>
-                          <Table.Summary.Cell index={4} align='right'>
-                            <Typography.Title level={5} >{total_kb_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>
-                          <Table.Summary.Cell index={5}  align='right'>
-                            <Typography.Title level={5} >{total_ht_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>
-                          <Table.Summary.Cell index={6}  align='right'>
-                            <Typography.Title level={5} >{total_tot_saleamt.toLocaleString('ko-KR')}</Typography.Title>
-                          </Table.Summary.Cell>                          
-                        </Table.Summary.Row>
-                      </>
-                    );
-                  }}
-                />
-              }
-              
-            </Space>
+                  loading ?
+                  <Spin tip="Loading..." size="large">
+                  </Spin>  : 
+                  <Table bordered key='table_1' 
+                  className="mr-4"
+                    columns={columnsByProd} 
+                    dataSource={newDataByProd} 
+                    pagination={false} 
+                    summary={(pageData) => {
+                        let total_kb_saleamt = 0;
+                        let total_ht_saleamt = 0;
+                        let total_tot_saleamt = 0;
+                        console.log("==============pageData==============");
+                        console.log(pageData);
+                        pageData.forEach(({ KB_SALEAMT, HT_SALEAMT, TOT_SALEAMT }) => {
+                        // kb_saleamt.replace(/,/g, "")
+                        // console.log("kb_saleamt=", kb_saleamt );
+                        
+                        total_kb_saleamt += KB_SALEAMT;
+                        total_ht_saleamt += HT_SALEAMT;
+                        total_tot_saleamt += TOT_SALEAMT;
+                      });
+                      return (
+                        <>
+                          <Table.Summary.Row>
+                            <Table.Summary.Cell index={0} colSpan={4} align='center'>Total</Table.Summary.Cell>
+                            <Table.Summary.Cell index={4} align='right'>
+                              <Typography.Title level={5} >{total_kb_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>
+                            <Table.Summary.Cell index={5}  align='right'>
+                              <Typography.Title level={5} >{total_ht_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>
+                            <Table.Summary.Cell index={6}  align='right'>
+                              <Typography.Title level={5} >{total_tot_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>                          
+                          </Table.Summary.Row>
+                        </>
+                      );
+                    }}
+                  />
+                }              
+                
+                {/* {
+                  onData == 'clickData' ? (<Table key='table_2' columns={columns} dataSource={clickData} />): (<Table key='table_2' columns={columns} dataSource={[...data]} />)
+                } */}
+                {
+                  loading ?
+                  <Spin tip="Loading..." size="large">
+                  </Spin>  : <Table bordered key='table_2' columns={columns} dataSource={newData} pagination={false} onChange={onChange} 
+                    summary={(pageData) => {
+                        let total_kb_saleamt = 0;
+                        let total_ht_saleamt = 0;
+                        let total_tot_saleamt = 0;
+                        console.log("==============pageData==============");
+                        console.log(pageData);
+                        pageData.forEach(({ KB_SALEAMT, HT_SALEAMT, TOT_SALEAMT }) => {
+                        // kb_saleamt.replace(/,/g, "")
+                        // console.log("kb_saleamt=", kb_saleamt );
+                        
+                        total_kb_saleamt += KB_SALEAMT;
+                        total_ht_saleamt += HT_SALEAMT;
+                        total_tot_saleamt += TOT_SALEAMT;
+                      });
+                      return (
+                        <>
+                          <Table.Summary.Row>
+                            <Table.Summary.Cell index={0} colSpan={4} align='center'>Total</Table.Summary.Cell>
+                            <Table.Summary.Cell index={4} align='right'>
+                              <Typography.Title level={5} >{total_kb_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>
+                            <Table.Summary.Cell index={5}  align='right'>
+                              <Typography.Title level={5} >{total_ht_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>
+                            <Table.Summary.Cell index={6}  align='right'>
+                              <Typography.Title level={5} >{total_tot_saleamt.toLocaleString('ko-KR')}</Typography.Title>
+                            </Table.Summary.Cell>                          
+                          </Table.Summary.Row>
+                        </>
+                      );
+                    }}
+                  />
+                }
+                
+              </Space>
+            </div>
       </div>
   );
 };
