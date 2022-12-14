@@ -26,7 +26,7 @@ async function handler(
         console.log(empPassword);
         const params = new URLSearchParams(`empNo=${empNo}&empPassword=${empPassword}`);
         const results = await fetch(
-            `http://172.29.41.133:7070/kflowapi/getempinfo`,
+            `http://129.100.253.17:7070/kflowapi/getempinfo`,
             {
               method: 'POST',
               headers: {

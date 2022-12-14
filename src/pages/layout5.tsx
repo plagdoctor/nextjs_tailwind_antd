@@ -158,8 +158,8 @@ const App2: NextPage = ({
     try { 
       // date.toISOString().substring(0,10).replace(/-/g,'');
     const clickResults = await fetch(
-      // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
-      `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+      // `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+      `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
     )
     .then(function(response) {
       return response.json();
@@ -187,8 +187,8 @@ const App2: NextPage = ({
     try { 
       // date.toISOString().substring(0,10).replace(/-/g,'');
     const clickResultsByProd = await fetch(
-      // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
-      `http://172.29.41.133:7070/kflowapi/getcommissionsaledatabyprod?storeCd=029&saleDate=${date}`
+      // `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+      `http://129.100.253.17:7070/kflowapi/getcommissionsaledatabyprod?storeCd=029&saleDate=${date}`
     )
     .then(function(response) {
       return response.json();
@@ -423,7 +423,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   //   }
   // )
   const results = await fetch(
-    `http://172.29.41.133:7070/kflowapi/postcommissionsaledata`,
+    `http://129.100.253.17:7070/kflowapi/postcommissionsaledata`,
     {
       method: 'POST',
       headers: {
@@ -442,7 +442,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     });
 
     const results2 = await fetch(
-      `http://172.29.41.133:7070/kflowapi/postcommissionsaledatabyprod`,
+      `http://129.100.253.17:7070/kflowapi/postcommissionsaledatabyprod`,
       {
         method: 'POST',
         headers: {

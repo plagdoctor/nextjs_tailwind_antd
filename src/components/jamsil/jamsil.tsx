@@ -289,8 +289,8 @@ const Jamsil = ({
         try { 
           // date.toISOString().substring(0,10).replace(/-/g,'');
         const clickResults = await fetch(
-          // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
-          `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+          // `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+          `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
         )
         .then(function(response) {
           return response.json();
@@ -318,8 +318,8 @@ const Jamsil = ({
         try { 
           // date.toISOString().substring(0,10).replace(/-/g,'');
         const clickResultsByProd = await fetch(
-          // `http://172.29.41.133:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
-          `http://172.29.41.133:7070/kflowapi/getcommissionsaledatabyprod?storeCd=029&saleDate=${date}`
+          // `http://129.100.253.17:7070/kflowapi/getcommissionsaledata?storeCd=029&saleDate=${date}`
+          `http://129.100.253.17:7070/kflowapi/getcommissionsaledatabyprod?storeCd=029&saleDate=${date}`
         )
         .then(function(response) {
           return response.json();

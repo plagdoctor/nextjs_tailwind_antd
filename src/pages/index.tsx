@@ -241,7 +241,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     // //   }
     // // )
     const results = await fetch(
-      `http://172.29.41.133:7070/kflowapi/postcommissionsaledata`,
+      `http://129.100.253.17:7070/kflowapi/postcommissionsaledata`,
       {
         method: 'POST',
         headers: {
@@ -260,7 +260,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       });
   
       const results2 = await fetch(
-        `http://172.29.41.133:7070/kflowapi/postcommissionsaledatabyprod`,
+        `http://129.100.253.17:7070/kflowapi/postcommissionsaledatabyprod`,
         {
           method: 'POST',
           headers: {
