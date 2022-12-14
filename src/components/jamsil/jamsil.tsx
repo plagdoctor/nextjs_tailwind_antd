@@ -247,7 +247,7 @@ const Jamsil = ({
     // const today = Date.now();
     
     // Item[] 에 넣기 전에 000,000 처리
-    for (var i = 0; i < results['retData'].length; i++) {
+    for (var i = 0; i < results['retData']?.length; i++) {
         // //console.log(results['retData'][i]);
         // results['retData'][i]['KB_SALEAMT'] = results['retData'][i]['KB_SALEAMT'].toLocaleString('ko-KR');
         // results['retData'][i]['HT_SALEAMT'] = results['retData'][i]['HT_SALEAMT'].toLocaleString('ko-KR');
@@ -256,7 +256,7 @@ const Jamsil = ({
         resultArray.push(results['retData'][i]);
     }  
 
-    for (var i = 0; i < results2['retData'].length; i++) {
+    for (var i = 0; i < results2['retData']?.length; i++) {
         //console.log(results['retData'][i]);
         // results2['retData'][i]['KB_SALEAMT'] = results2['retData'][i]['KB_SALEAMT'].toLocaleString('ko-KR');
         // results2['retData'][i]['HT_SALEAMT'] = results2['retData'][i]['HT_SALEAMT'].toLocaleString('ko-KR');
@@ -301,7 +301,7 @@ const Jamsil = ({
           return json;})
         
     
-        for (var i = 0; i < clickResults['retData'].length; i++) {
+        for (var i = 0; i < clickResults['retData']?.length; i++) {
           
           // clickResults['retData'][i]['KB_SALEAMT'] = clickResults['retData'][i]['KB_SALEAMT'].toLocaleString('ko-KR');
           // clickResults['retData'][i]['HT_SALEAMT'] = clickResults['retData'][i]['HT_SALEAMT'].toLocaleString('ko-KR');
