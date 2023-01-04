@@ -6,12 +6,7 @@ import { Form,
   } from 'antd';
   
   import {
-    DesktopOutlined,
-    FileOutlined,
-    PieChartOutlined,
-    TeamOutlined,
     UserOutlined,
-    LockOutlined
   } from '@ant-design/icons';
   import type { NextPage } from 'next';
   
@@ -42,12 +37,10 @@ const Enter: NextPage = () => {
     
     useEffect(() => {
         if (data?.ok == true){
-            console.log("일로오지?")
             message.success('Login success!');  
             router.push("/");
         }
         if (data?.ok == false){
-            console.log("일로오지?")
             message.warn('Login 실패하였습니다!');  
             // router.push("/");
         }        

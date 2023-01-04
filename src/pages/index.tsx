@@ -35,8 +35,6 @@ import type {
 
 import { URLSearchParams } from 'url';
 import useSWR, { useSWRConfig } from "swr";
-
-import {HashLoader} from 'react-spinners';
 import useUser from '@libs/client/useUser';
   
 import kyoboLogo from '@public/img/logo_kyobo.png'
@@ -46,9 +44,9 @@ import { useRouter } from 'next/router';
 import Jamsil from '@components/jamsil/jamsil';
 import Mileage from '@components/mileage/mileage';
 
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 const { Header, Content, Footer, Sider } = Layout;
-const { Text } = Typography;
+// const { Text } = Typography;
 
 
 
@@ -97,10 +95,10 @@ const App2: NextPage = ({
   console.log(user);
   const [logout, {data:logOutData,loading:logOutLoading , error}] = useMutation<MutationResult>("/api/users/logout");
   
-  const { mutate } = useSWRConfig();
+  // const { mutate } = useSWRConfig();
   const [collapsed, setCollapsed] = useState(false);
   const [onSelectedKeys, setOnSelectedKeys] = useState('1'); //키
-  const [onData, setOndata] = useState('data');
+  // const [onData, setOndata] = useState('data');
   
   const router  = useRouter();    
 
@@ -246,6 +244,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
         },
         body: params2
       }
@@ -255,7 +254,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return res.json();
       })
       .then(json => {
-        //   console.log(json);
+          console.log(json);
         return json;
       });
   
