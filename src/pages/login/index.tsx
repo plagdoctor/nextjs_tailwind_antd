@@ -73,7 +73,7 @@ const Enter: NextPage = () => {
             <a href="#" className="bg-black text-white font-bold text-xl p-4" >Logo</a>
         </div>     */}
         <div className="flex flex-col justify-center md:justify-start my-auto md: mt-12 px-8 md:px-24 lg:px-32">
-            <div className="text-center text-3xl">오프라인 백화점입점</div>
+            <div className="text-center text-3xl">오프라인 수수료 매출</div>
             <div className="text-center text-3xl">정산관리시스템</div>
             
             <div className="flex flex-col pt-4">
